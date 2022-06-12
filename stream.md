@@ -36,36 +36,36 @@
 	- Iterator 는 컬렉션의 요소를 가져오는 것에서 부터 처리하는 것까지 모두 개발자가 작성해야 히지만, 스트림은 람다식으로 요소 처리 내용만 전달할뿐 반복은 컬렉션 내부에서 일어난다. 스트림을 이용하면 코드도 간결해지지만, 무엇보다도 요소의 병렬처리가 컬렉션 내부에서 처리되므로 일석이조의 효과를 가져온다.
 	- 병렬처리란 한가지 작업을 서브작업으로 나누고 , 서브작업을 분리된 스레드에서 병렬적으로 처리하는 것을 말한다. 병렬 처리 스트림을 이용하면 런타임시 하나의 작업을 서브작업으로 자동으로 나누고, 서브작업의 결과를 자동으로 결합해서 최종 결과물을 생성한다,
 	- 예를 들어 컬렉션의 요소 총합을 구할때 순차 처리 스트림은 하나의 스레드가 요소들을 순차적으로 읽어 합을 구하지만, 병렬 처리 스트림을 이용하면 여러개의 스레드가 요소들을 부분적으로 합하고 이 부분합을 최종결합해서 전체합을 생성한다. 
-		```java
-		import java.util.Arrays;  
-		import java.util.List;  
-		  
-		public class StreamEx {  
-		  
-		    public static void print(String str){  
-		        System.out.println(str + " : " + Thread.currentThread().getName());  
-		    }  
-		    public static void main(String[] args) {  
-			      List<String> list = Arrays.asList("홍", "신", "김");  
-		  
-				  list.stream().forEach(s->StreamEx.print(s));  
-				  //list.stream().forEach(StreamEx::print);  
-				  /* 결과 
-				   홍 : main
-				   신 : main
-				   김 : main
-				  */
+	```java
+	import java.util.Arrays;  
+	import java.util.List;  
 
-				  list.parallelStream().forEach(s -> StreamEx.print(s));  
-				  //list.parallelStream().forEach(StreamEx::print);
-  				  /* 결과 
-				   신 : main
-				   김 : ForkJoinPool.commonPool-worker-5
-				   홍 : ForkJoinPool.commonPool-worker-3
-				  */
-		    }  
-		}
-		```			
+	public class StreamEx {  
+
+	    public static void print(String str){  
+		System.out.println(str + " : " + Thread.currentThread().getName());  
+	    }  
+	    public static void main(String[] args) {  
+		      List<String> list = Arrays.asList("홍", "신", "김");  
+
+			  list.stream().forEach(s->StreamEx.print(s));  
+			  //list.stream().forEach(StreamEx::print);  
+			  /* 결과 
+			   홍 : main
+			   신 : main
+			   김 : main
+			  */
+
+			  list.parallelStream().forEach(s -> StreamEx.print(s));  
+			  //list.parallelStream().forEach(StreamEx::print);
+			  /* 결과 
+			   신 : main
+			   김 : ForkJoinPool.commonPool-worker-5
+			   홍 : ForkJoinPool.commonPool-worker-3
+			  */
+	    }  
+	}
+	```			
 
 
 
@@ -75,53 +75,53 @@
 	 - 최종처리에서는 반복, 카운팅, 평균, 총합등의 집계를 수행한다.
 	 
 
-	 
-	 
-		```java
-		import java.util.Arrays;  
-		import java.util.List;  
-		  
-		public class StreamMapAndReduce {  
-		    public static void main(String[] args) {
-			    /*
-				학생 객체 요소를 가지는 컬렉션
-				*/
-		        List<Student> studentList = Arrays.asList(  
-		                new Student("홍길동", 10),  
-						new Student("홍길동", 20),  
-						new Student("홍길동", 30));  
-				/*
-				중간처리에서 학생을 점수를 뽑아내고, 
-				최종처리에서는 점수의 평균값을 산출한다.
-				*/
-				
-				double avg = studentList.stream().
-							 mapToInt(Student::getScore).
-							 average().
-							 getAsDouble();
-							  
-				System.out.println("avg = " + avg);  
-			}  
+
+
+	```java
+	import java.util.Arrays;  
+	import java.util.List;  
+
+	public class StreamMapAndReduce {  
+	    public static void main(String[] args) {
+		    /*
+			학생 객체 요소를 가지는 컬렉션
+			*/
+		List<Student> studentList = Arrays.asList(  
+			new Student("홍길동", 10),  
+					new Student("홍길동", 20),  
+					new Student("홍길동", 30));  
+			/*
+			중간처리에서 학생을 점수를 뽑아내고, 
+			최종처리에서는 점수의 평균값을 산출한다.
+			*/
+
+			double avg = studentList.stream().
+						 mapToInt(Student::getScore).
+						 average().
+						 getAsDouble();
+
+			System.out.println("avg = " + avg);  
 		}  
-		  
-		class Student{  
-			private String name;  
-			private int score;  
-		  
-			public String getName(){  
-				return this.name;  
-			}  
-		  
-		    public int getScore(){  
-		        return this.score;  
-			}  
-		  
-		    public Student(String name, int score){  
-		        this.name = name;  
-		        this.score = score;  
-		    }  
-		}
-		```
+	}  
+
+	class Student{  
+		private String name;  
+		private int score;  
+
+		public String getName(){  
+			return this.name;  
+		}  
+
+	    public int getScore(){  
+		return this.score;  
+		}  
+
+	    public Student(String name, int score){  
+		this.name = name;  
+		this.score = score;  
+	    }  
+	}
+	```
 
 ## 스트림의 pipelines
  - 스트림은 데이터의 필터, 맵핑, 정렬 그룹핑등 중간처리와 합계, 평균, 카운팅, 최대, 최소의 최종처리를 파이프라인(pipeline)으로 해결한다
