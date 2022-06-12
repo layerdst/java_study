@@ -142,9 +142,9 @@
 ## 컬렉션에서 스트림 얻기
 ```java
 List<Student> students = Arrays.asList(
-							new Student("홍길동", 10),  
-							new Student("홍길동", 20),  
-							new Student("홍길동", 30));
+    new Student("홍길동", 10),  
+    new Student("홍길동", 20),  
+    new Student("홍길동", 30));
 Stream<Student> stream = students.stream();
 stream.forEach(s->System.out.println(s.getName());
 ```
