@@ -186,3 +186,237 @@ stream.forEach(s->System.out.println(s.getName());
 		.filter(n->n.startsWith("신"))
 		.forEach(n->System.out.println(n));	
 	```
+
+## flatMap 메소드
+- flatMap 메소드는 요소를 대체하는 복수개의 요소들로 구성된 새로운 스트림을 리턴한다. 
+	```java
+	List<String> inputList = Arrays.asList("java lamda", "js scope" , "c pointer");
+	inputList.stream()
+		.flatMap(data -> Arrays.stream(data.split(" ")))
+		.forEach(word -> System.out.println(word));
+	
+		/* 출력
+			java
+			lamda
+			js
+			scope
+			c
+			pointer
+		*/
+	
+	List<String> inputLists2 = Arrays.asList("1 , 2 , 3","4, ,5 ,6");
+	inputLists2.stream()
+		.flatMapToInt(data -> 
+			String[] strArr = data.split(",");
+			int[] intArr = new int[strArr.length];
+			for(int i = 0; i>strArr.length; i++){
+				intArr[i] = Integer.parseInt(strArr[i].trim());																																																																																		
+			}
+		return Arrays.stream(intArr);
+		))
+		.forEach(n->System.out.println(n));	   
+		
+		/* 출력
+			1
+			2
+			3
+			4
+			5
+			6
+		*/
+	```
+## mapXXX()
+- 요소를 대체하는 요소로 구성된 새로운 스트림을 리턴한다. 
+```java
+/*
+T -> int 
+*/
+List<Student> students = Arrays.asList(
+							new Student("홍길동", 10),  
+							new Student("홍길동", 20),  
+							new Student("홍길동", 30));
+Stream<Student> stream = students.stream();
+	.mapToInt(Student :: getScore)
+	.forEach(s - > System.out.println(s));
+```
+## asDoubleStream(), asLongStream(), boxed()
+- asDoubleStream() : IntStream 의 int, LongStream의 long  -> double 요소 타입변환
+- asLongStream() : int -> long 요소 타입변환
+- boxed : int, long, double -> Integer, Long, Double 박싱
+	```java
+	int[] intArray = {1, 2, 3, 4, 5}
+	IntStream ints = Arrays.stream(intArray);
+	ints.asDoubleStream()
+		.forEach(d->System.out.println(d));
+		/*
+			1.0
+			2.0
+			3.0
+			4.0
+			5.0
+		*/
+	
+	intStream = Arrays.stream(intArray);
+	intStream.boxed()
+		.forEach(obj->System.out.println(obj.intValue());
+		/*
+			1
+			2
+			3
+			4
+			5
+		*/
+	```
+## sorted()
+- Stream 은 요소가 최종처리 되기 전에 중간단계에서 요소를 정렬해서 최종 처리 순서를 변경 할 수 있다.
+- 객체 요소일 경우에 클래스가 Comparable을 구현하지 않으면 sorted() 메소드를 호출했을때 ClassCastException 이 발생하기 때문에 Comparable 을 구현한 요소에서만 sorted() 메소드를 호출해야 한다. 
+
+	```java
+		public class Student implements Comparable<Student>{
+			private String name;
+			private int score;
+			
+			public Student(String name, int score){
+				this.name = name;
+				this.score = score;
+			}
+			
+			public String getName(){
+				return name;
+			}
+			
+			public int getScore(){
+				return score;
+			}
+			
+			// 점수를 기준으로 오름차순 정렬
+			@Override
+			public int compareTo(Student o){
+				return Integer.compare(score, o.score);
+			}
+		}
+		
+	```
+- 객체 요소가 Comparable을 구현한 상태에서 **기본 비교 방법과 정반대 방향**으로 정렬하고 싶다면 다음 세가지 방법 중 하나를 선택해서 sorted를 호출 하면 된다. 
+	```java
+	//순방향	
+	sorted()
+	sorted((a,b)->a.compareTo(b));
+	sorted(Comparator.naturalOrder());
+	
+	//반대방향
+	sorted((a,b)->b.compareTo(a));
+	sorted(Comparator.reverseOrder());
+	
+	//람다식으로 작성(객체요소가 Comparable을 구현하지 않을시)
+	sorted((a,b) -> {...})
+	```
+- 객체요소가 Comparable을 구현하지 않을시 Comparable을 매개값으로 갖는 sorted() 메소드를 사용하면 된다. 
+	```java
+	sorted((a,b) -> {...})
+	```
+- sorted 는 다음과 같이 사용이 가능하다.
+	```java
+	int[] intArray = {1, 2, 3, 4, 5}
+	IntStream ints = Arrays.stream(intArray);
+	ints.sorted().forEach(n->System.out.println(n))
+	/* 출력결과
+		1 2 3 4 5		
+	*/
+	List<Student> students = Arrays.asList(
+							new Student("홍길동", 10),  
+							new Student("홍길동", 20),  
+							new Student("홍길동", 30));
+	students.stream()
+		.sorted(Comparator.reverseOrder())
+		.forEach(s->System.out.println(s.getScore));
+	
+	/* 출력결과
+		30 20 10	
+	*/
+	
+		
+	```
+
+## 루핑(peek(), forEach())
+- looping은 요소 전체를 반복하는 것을 말하는데, 루핑메소드는 peek, forEach 가 있다. 이 두 메소드는 루핑한다는 기능에서는 동일 하지만, 동작방식이 다르다.
+
+- peek() : 중간처리 단계에서 전체요소를 루핑하면서 추가적인 작업을 하기 위해 사용한다. 최종 처리 메소드가 실행되지 않으면 지연되기 때문에 반드시 최종처리 메소드가 호출되어야 동작한다.
+	```java
+	// 동작하지 않음
+	//필터링후 어떤 요소만 남았는지 확인하기 위해 다음과 같이 peek을 마지막에 호출할 경우 스트림은 동작하지 않는다.
+	intStream
+		.filter(a->a%2==0)
+		.peek(a-> System.out.println(a))
+	
+	//요소 처리의 최종단계가 합을 구하는 것이라면 peek() 메소드 호출 후 sum() 을 호출해야만 peek() 정상적으로 동작한다.
+	intStream
+		.filter(a-> a%2 ==0)
+		.peek(a->System.out.println(a))
+		.sum()
+		
+	```
+- forEach는 최종 처리 메소드이기 때문에 파이프 라인 마지막에 루핑하면서 요소를 하나씩 처리한다. forEach() 는 요소를 소비하는 최종처리 메소드이므로 이후에 sum() 과 같은 다른 최종 메소드를 호출하면 안된다.
+
+
+## 매칭(allMatch(), anyMatch(), noneMatch())
+- 스트림 클래스는 최종처리 단계에서 요소들이 특정조건에 만족하는지 조사할 수 있도록 세가지 매칭 메소드를 제공하고 있다. 
+- allMatch() 메소드는 모든 요소가 매개값으로 만족
+- anyMatch()  최소한 한개 만족
+- noneMatch() 모든 것을 만족
+ ```java 
+int[] arr = {2, 4, 6}
+boolean result = Arrays.stream(intArr)
+	.allMatch(a -> a%2);//true
+
+
+result = Arrays.stream(intArr)
+	.anyMatch(a->a%3==0) // true
+
+
+result = Arrays.stream(intArr)
+	.noneMatch(a->a%3==0) // false
+
+ ```
+ ## 기본집계(sum(), count(), max(), min(), findFirst()
+  - 최종 요소로 활용가능함. 
+
+## Stream과 Optional  결합
+- Optional,OptionalDouble , OptionalInt, OptionalLong 클래스는 저장하는 값 타입만 다를 뿐 제공하는 기능은 거의 동일하다. Optional 클래스는 단순히 집계값만 저장하는 것이 아니라, 집계값이 존재하지 않을 경우 디폴트 값을 설정할 수 있고, 집계값을 처리하는 Consumer 도 등록할 수 있다. 
+
+	 \* **Consumer 는 return 값이 없는 매개변소를 소비하는 accept()**
+	
+	```java
+	List<Integer> list = new ArrayList<>();
+	double avg = list.stream()
+				.mapToInt(Integer :: intValue)
+				.average()
+				.getAsDouble();
+	//NoSuchElementException 발생 :: 요소가 없기 때문!
+	```
+- Optional 객체를 얻어 다음과 같이 사용이 가능함 - 첫번째 ifPresent 으로 if 문 구성	
+	```java
+	OptionalDouble optional = list.stream()
+		.mapToInt(Integer::intValue)
+		.average();
+	
+	if(optional.isPresent()){
+		System.out.println(optional.getAsDouble());
+	}else{
+		System.out.println("0.0")
+	}
+	```
+ - 두번째 orElse() 메소드로 디폴트 값을 고정.
+	 ```java
+	double avg = list.stream()
+		.mapToInt(Iteger :: intValue)
+		.average()
+		.orElse(0.0);
+	```
+ - 세번째 ifPresent 메소드로 값을 이용하는 람다식을 실행
+	```java
+	double avg = list.stream()
+		.mapToInt(Iteger :: intValue)
+		.average()
+		.ifPresent(a->System.out.println(a));
+	```
