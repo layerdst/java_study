@@ -384,7 +384,7 @@ result = Arrays.stream(intArr)
 ## Stream과 Optional  결합
 - Optional,OptionalDouble , OptionalInt, OptionalLong 클래스는 저장하는 값 타입만 다를 뿐 제공하는 기능은 거의 동일하다. Optional 클래스는 단순히 집계값만 저장하는 것이 아니라, 집계값이 존재하지 않을 경우 디폴트 값을 설정할 수 있고, 집계값을 처리하는 Consumer 도 등록할 수 있다. 
 
-	 \* **Consumer 는 return 값이 없는 매개변소를 소비하는 accept()**
+	 \* **Consumer 는 return 값이 없는 매개변수를 소비하는 accept()**
 	
 	```java
 	List<Integer> list = new ArrayList<>();
