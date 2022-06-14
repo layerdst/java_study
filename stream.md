@@ -420,3 +420,59 @@ result = Arrays.stream(intArr)
 		.average()
 		.ifPresent(a->System.out.println(a));
 	```
+
+## 커스텀 집계 reduce()
+- 스트림은 기본 집계인 sum(), average(), count(), max() 등을 제공하지만, 프로그램화해서 집계결과물을 만들수 있는 reduce() 메소드도 제공한다.   
+
+- 각 인터페이스는 매개타입으로 xxxOperator, 리턴타입으로 OptionalXXX, int, long, double 을 가지는 reduce() 메소드가 오버로딩 되있다. 
+- 스트림에 요소가 전혀 없을 경우 디폴트 값이 identity 매개값이 리턴된다. 
+```java
+int sum = studentList.stream()
+	.map(Student :: getScore)
+	.reduce((a,b) -> a+b)
+	.get(); // 스트림 요소가 없을 경우 NoSuchElementException 발생
+
+int sum = studentList.stream()
+	.map(Student :: getScore)
+	.reduce(0, (a,b) -> a+b);
+	//스트림요소가 없어도 0이 리턴된다.
+```
+
+## collect()
+- 스트림 요소들은 필터링 또는 매핑ㅍ한 후 요소들을  수집하는 최종처리 메소드인 collect() 를 제공한다. 이 메소드를 이용하면 필요한 요소만 컬렉션으로 담고, 요소들을 grouping 한 후 reduction 할 수 있다.
+
+	```
+	interface : Stream
+	method : collect(Collector <T,A,R> collector) 
+	return type : R
+	```
+
+- 매개값이 Collector 는 어떤 요소를 어떤 컬렉션에 수집할 것 인지를 결정한다. Collector의 타입 파라미터는 T 는 요소이고, A 는 누적기이다. 그리고 R은 요소가 저장될 Collection이다. 
+- 풀어서 해석하면 T요소를 A누적기가 R에 저장한다는 의미이다.
+- Collector의 구현객체는 다음과 같이 Colletors 클래스의 다양한 정적 메소드를 이용해서 얻을 수 있다. 
+- 리턴타입이 Collector<T, ? , List<T>> 에서 누적기가 "?"  로 표기 되어 있는데, 이는 R 에서 T 요소로 저장하는 법을 알고 있어서 A가 필요 없기 때문이다.
+- Map과 ConcurrentMap 의 차이점은 Map 은 스레드에 안전하지 않고, ConcurrentMap은 스레드에 안전하다. 즉 멀티스레드에서는 ConcurrentMap을 얻는 것이 좋다
+
+```java
+Stream <Student> totalStrem = totalList.Stream();
+Stream <Student> mailSream = totalSteam.filters(s->s.getSex() == Student.Sex.MALE);
+Collector<Student, ? , List<Student>> collector = Collector.toList();
+List<Student> maleList = maleStream.collect(collector);
+
+//아래와 같이 간단히 작성이 가능하다.
+List<Student> maleList = totalList.stream()
+	.filter(s->s.getSex() == Student.Sex.MALE)
+	.collect(Collector.toList());
+
+
+Stream<Student> totalStream = totalList.stream();
+Stream<Student> femaleStream = totalStream.filter(s->s.getSex() == Student.Sex.FEMALE);
+Supplier<HashSet<Student>> supplier = HashSet :: new;
+Collector<Student, ? , HashSet<Student>> colletor = Collector.toCollector(supplier);
+Set<Student> femaleSet = femaleStream.collect(collector);
+
+//위 코드는 아래와 같이 간단히 작성이 가능하다
+Set<Student> femaleSet = totalList.stream()
+	.filter(s->s.getSex() == student.Sex.FEMALE)
+	.collect(Collector.toCollection(HashSet :: new));
+```
