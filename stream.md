@@ -476,3 +476,64 @@ Set<Student> femaleSet = totalList.stream()
 	.filter(s->s.getSex() == student.Sex.FEMALE)
 	.collect(Collector.toCollection(HashSet :: new));
 ```
+## 사용자 정의 컨테이너 수집하기
+- 스트림은 사용자 정의 컨테이너 객체에 수집할 수 있도록 다음과 같이 collect() 메소드를 추가적으로 제공한다. 
+	```
+	interface : Stream
+	return : R
+	method : collect(Supplier<R>, BiConsumer<R, ? super T, BiConsumer<R,R>)
+	```
+
+	- Supplier는 요소들이 수집될 컨테이너 객체를 생성하는 역할을 한다. 순차처리 스트림에서는 단 한 번 Supplier가 실행되고 하나의 컨테이너 객체를 생성한다. 병렬처리 스트림에서는 여러번 Supplier가 실행되고, 스레드별로 여러개의 컨테이너 객체를 생성한다. 하지만 최종적으로 하나의 컨테이너 객체로 결합한다. 
+	- 두번째 XXXConsumer 는 컨테이는 객체(R) 에 요소 (T) 를 수집하는 역할을 한다. 스트림에서 요소를 수집할때마다 Consumer 가 생성된다.
+	- 세번째 BiConsumer 는 컨테이너 객체를 결합하는 역할을 한다. 순차처리 스트림에서는 호출되지 않고, 병렬처리 스트림에서만 호출되어 스레드별로 생성된 컨테치너 객체를 격ㄹ합해서 최종 컨테이너 객체를 완성한다.
+	- return type R은 요소들이 최종수집된 컨테이너 객체이다. 순차 처리 스트림에서는 리턴 객체가 첫번째 Supplier  가 생성한 객체이지만, 병렬처리 에서는 최종결합된 컨테이너 객체가 된다.
+	```java
+	public Class MaleStudent{
+		private List<Student> list;
+		
+		public MaleStudent(){
+			list = new ArrayList<Student>();
+			System.out.println(Thread.currentThread().getName();
+		}
+		
+		public void accumulate(Student student){
+			list.add(student);
+			System.out.println(Thread.currentThread().getName());
+		}
+		
+		public void combine(MaleStudent other){
+			list.addAll(other.getList());
+			System.out.println(Thread.currentThread().getName());
+		}
+		
+		public List<Student> getList(){
+			return list;
+		}
+	}		
+	```
+	```java
+	Stream<Student> totalStream = totalList.stream();
+	Stream<Student> maleStream = totalStream.filter(s->s.getSex() == Student.Sex.MALE);
+
+	Supplier<MaleStudent> supplier = ()-> new MaleStudent();
+	BiConsumer<MaleStudent, Student> accumulator = (ms, s) -> ms.accumulate(s);
+	BiConsumer<MaleStudent, MaleStudent> combiner = (ms1, ms2) -> ms1.combine(ms2);
+
+	MaleStudent maleStudent = maleStream.collect(supplier, accumulator, combiner);
+
+	// 위의 코드를 아래와 같이 간단히 표현가능하다
+	MaleStudent maleStudent = totalList.stream()
+		.filter(s->s.getSex() == Student.Sex.MALE)
+		.collect(
+			() -> new MaleStuent(),
+			(r, t) -> r.accumulate(t),
+			(r1, r2) -> r1.combine(r2)
+		);
+
+	// 더 축약이 가능하다.
+	MaleStudent maleStudent = totalList.stream()
+		.filter(s->s.getSex() == Student.Sex.MALE)
+		.collect(MaleStudent :: new, MaleStudent::accumlate, MaleStudent :: combine);
+
+	```
