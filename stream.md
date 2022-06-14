@@ -151,22 +151,22 @@ stream.forEach(s->System.out.println(s.getName());
 
 ## 배열에서 스트림 얻기
 ```java
-	String[] arr = {"홍", "김"}
-	Stream<String> strStream = Arrays.stream(arr);
-	arr.forEach(a->System.out.println(a));
-	
-	int[] intArr = {1,2,3};
-	IntStream intStream = Arrays.stream(intArr);
-	intStream.forEach(a->System.out.println(a));
+String[] arr = {"홍", "김"}
+Stream<String> strStream = Arrays.stream(arr);
+arr.forEach(a->System.out.println(a));
+
+int[] intArr = {1,2,3};
+IntStream intStream = Arrays.stream(intArr);
+intStream.forEach(a->System.out.println(a));
 	
 ```
 ## 숫자범위에서 스트림 얻기
 
 ```java 
-	IntStream stream = IntStream.rangeClosed(1,100);
-	stream.forEach(a->sum += a);
-	System.out.println(sum);
-	// 5050
+IntStream stream = IntStream.rangeClosed(1,100);
+stream.forEach(a->sum += a);
+System.out.println(sum);
+// 5050
 
 ```
 ## 필터링(distinct(), filter())
@@ -272,29 +272,29 @@ Stream<Student> stream = students.stream();
 - 객체 요소일 경우에 클래스가 Comparable을 구현하지 않으면 sorted() 메소드를 호출했을때 ClassCastException 이 발생하기 때문에 Comparable 을 구현한 요소에서만 sorted() 메소드를 호출해야 한다. 
 
 	```java
-		public class Student implements Comparable<Student>{
-			private String name;
-			private int score;
-			
-			public Student(String name, int score){
-				this.name = name;
-				this.score = score;
-			}
-			
-			public String getName(){
-				return name;
-			}
-			
-			public int getScore(){
-				return score;
-			}
-			
-			// 점수를 기준으로 오름차순 정렬
-			@Override
-			public int compareTo(Student o){
-				return Integer.compare(score, o.score);
-			}
+	public class Student implements Comparable<Student>{
+		private String name;
+		private int score;
+
+		public Student(String name, int score){
+			this.name = name;
+			this.score = score;
 		}
+
+		public String getName(){
+			return name;
+		}
+
+		public int getScore(){
+			return score;
+		}
+
+		// 점수를 기준으로 오름차순 정렬
+		@Override
+		public int compareTo(Student o){
+			return Integer.compare(score, o.score);
+		}
+	}
 		
 	```
 - 객체 요소가 Comparable을 구현한 상태에서 **기본 비교 방법과 정반대 방향**으로 정렬하고 싶다면 다음 세가지 방법 중 하나를 선택해서 sorted를 호출 하면 된다. 
@@ -324,9 +324,9 @@ Stream<Student> stream = students.stream();
 		1 2 3 4 5		
 	*/
 	List<Student> students = Arrays.asList(
-							new Student("홍길동", 10),  
-							new Student("홍길동", 20),  
-							new Student("홍길동", 30));
+				new Student("홍길동", 10),  
+				new Student("홍길동", 20),  
+				new Student("홍길동", 30));
 	students.stream()
 		.sorted(Comparator.reverseOrder())
 		.forEach(s->System.out.println(s.getScore));
