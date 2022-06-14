@@ -19,7 +19,7 @@
 	Stream<String> stream = list.stream();
 	steam.forEach(name -> System.out.println(name));
 	```
-- 컬렉션 (java.util.Collection) 의 stream() 메소드로 스트림 객체를 얻고 나서 stream.forEach... 메소드를 통해 컬렉션 요소를 하나씩 콘솔에 출력하다. forEach() 메소드는 다음과 같이 Consumer 함수적 인터페이스 타입의 매개값(target type) 을 가지므로 컬렉션의 요소를 소비할 코드를 람다식으로 기술할 수 있다
+- 컬렉션 (java.util.Collection) 의 stream() 메소드로 스트림 객체를 얻고 나서 stream.forEach... 메소드를 통해 컬렉션 요소를 하나씩 콘솔에 출력다. forEach() 메소드는 다음과 같이 Consumer 함수적 인터페이스 타입의 매개값(target type) 을 가지므로 컬렉션의 요소를 소비할 코드를 람다식으로 기술할 수 있다
 	```java
 	void forEach(Consumer<T> action)
 	```
