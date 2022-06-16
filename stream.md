@@ -537,3 +537,95 @@ Set<Student> femaleSet = totalList.stream()
 		.collect(MaleStudent :: new, MaleStudent::accumlate, MaleStudent :: combine);
 
 	```
+ ## Grouping
+ - collect() 메소드는 단순히 요소를 수집하는 기능 이외에 컬렉션의 요소들을 Grouping 해서 Map 객체를 생성하는 기능도 제공한다. 
+ - collect 를 호출할 때 Collectors 의 groupingBy() 또는 groupingByConcurrent() 가 리턴하는 Collector를 매개값으로 대입하면 된다.
+ - groupingBy() 는 스레드에 안전하지 않는 Map을 생성하지만 groupingByConcurrent() 스레드에 안전한 ConcurrentMap을 생성한다.
+	 ```java
+	 리턴타입 Colletor<T, ? ,Map<K, List<T>>>
+	 메소드 groupingBy(Function<T,K> clasifier)
+	 
+	 리턴타입 Colletor<T, ? ,ConcurrentMap<K, List<T>>>
+	 메소드 groupingByConcurrent(Function<T,K> clasifier)	 
+- 예제 1
+	 ```java
+	Stream<Student> totalStream = totalList.stream();
+	Function<Student, Student.Sex> classfier =Student :: getSex;
+	Collector<Student, ? Map<Student.Sex, List<Student>>> = Collector.groupingBy(classfier);
+	Map<Student.Sex, List<Student>> mapBySex = totalStream.collect(collector);
+	
+	//축약하기
+	Map<Student.Sex , List<Student>> mapBySex = totalList.stream()
+	.collect(Collectors.groupingBy(Student :: getSex));
+	```
+- 예제 2
+	```java
+	Stream<Student> totalStream = totalList.stream();
+	Function<Student, Student.City> classifier = Student::getCity;
+	Function<Student, String> mapper = Student::getName;
+	Collector<String, ?, List<String>> collector1 = Collectors.toList();
+	Collector<String, ?, List<String>> collector2 =
+	Collector.mapping(mapper, collector);
+	
+	Collector<Student, ?, Map<Student.City, List<String>>> collector3 = Collectors.groupingBy(classfier, collector2);
+	
+	Map<Student.City, List<String>> mapByCity = totalStream.collect(collector3);
+	
+  Collectors.groupingBy(classifier, collector2); 
+
+	//축약하기
+	Map<Student.City, List<String>> mapByCity = totalList.stream().collect( 
+		Collector.groupingBy(
+		Student::getCity,
+		Collectors.mapping(Student::getName, Collector.toList())
+	)
+	
+	//동일하지만 TreeMpa 객체로 변경하면 코드는 아래와 같다
+	...Use method()
+	...goupingBy(
+		Function<T,K> classifer,
+		Supplier<Map<K,D>> mapFactory.
+		Collect<T,A,D> Collector
+	) 
+	
+	Map<Student.City, List<String>> mapByCity = totalList.stream().collect(
+		Collector.groupingBy(
+			Student::getCity,
+			TreeMap::new,
+			Collectors.mapping(Student::getName, Collectors.toList())
+			
+	
+	``` 
+
+## Grouing 후 매핑 및 집계
+- Collectors.groupingBy() 메소드 후 매핑이나 집계(평균, 카운팅, 연결, 최대, 최소,합계) 할 수 있도록 매개값으로  Collector를 가질 수 있다. 
+- 이전 예제에서 그룹핑된 학생 이름으로 매핑하기 위해 mapping() 메소드로 Collector를 얻었다. Collector는 mapping() 메소드 이외에도 집계를 위해 다양한 Collector를 리턴하는 다음과 같은 메소드를 제공하고 있다.
+```java
+Stream<Student> totalStream = totalList.stream();
+Function<Student, Student.Sex> classfier = Student::getSex;
+
+ToDoubleFunction<Student> mapper = Student :: getScore;
+Collector<Student, ?, Double> collector1 = Collectors.averagingDouble(mapper);
+
+Collector<Student,?,Map<Student.Sex, Double>> collector2 = Collectors.groupingBy(classfier, collector1);
+
+Map<Student.Sex, Double> mapBySex = totalStream.collect(collect2);
+
+//축약
+Map<Student.Sex, Double> mapBySex = totalList.Stream();
+	.collect(
+		Collector.groupingBy(
+			Student :: getSex, 
+			Collector.averagingDouble(Student :: getScore)
+		)
+	);	
+
+Map<Student.Sex, String> mapByName = totalList.steam();
+	.collect(
+		Student::getSex, 
+		Collector.mapping(
+			Student::getName,
+			Collector.joining(",")
+		)
+	)
+```
