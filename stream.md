@@ -629,3 +629,53 @@ Map<Student.Sex, String> mapByName = totalList.steam();
 		)
 	)
 ```
+## 예제 
+- List에 저장되어 있는 String 요소에서 대소문자와  상관 없이 "java" 라는 단어가 포함된 문자열만 필터링해서 출력한다.
+	- 출력결과 
+		```
+		this is a java book
+		Java8 supports
+		```
+	- 풀이 
+
+		```java
+		List<String> list = Arrays.asList(  
+		        "this is a java book",  
+		  "lambda exp",  
+		  "Java8 supports"  
+		);
+
+		list.stream()
+			.filter(s->s.toLowerCase().contains("java"))
+			.forEach(a->System.out.println(a));
+
+		```
+ 
+ - List에 저장되어 있는 Member의 평균 점수를 출력한다
+	 - 풀이
+		 ```java
+		 List<Student> studentList = Arrays.asList(  
+					     new Student("홍", 10, Student.Sex.MALE),  
+						 new Student("김", 20, Student.Sex.FEMALE),  
+						 new Student("이", 30, Student.Sex.FEMALE));  
+		  
+		double avg = studentList.stream()
+				.mapToInt(Student::getScore)
+				.average()
+				.orElse(0.0);  
+		System.out.println("avg = " + avg);
+		``` 
+	
+- List 저장되어 있는 Member를 직업별로 그룹핑해서 Map<String, List<String>> 객체로 생성한다. 키는 Member 직업이고 값은 Member 이름으로 구성된 List<String> 이다.
+	```java
+	List<Members> members = Arrays.asList(  
+				new Members("홍길동", "개발자"),  
+				new Members("김나리", "디자이너"),  
+				new Members("김나리", "디자이너")  
+	);  
+	  
+	Map<String, List<String>> listg = members.stream()  
+	        .collect( Collectors.groupingBy(  
+	                Members::getJob,
+	                Collectors.mapping(Members::getName, Collectors.toList())));
+	```
