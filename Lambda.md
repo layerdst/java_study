@@ -303,17 +303,17 @@
 - 리턴값이 없는 accept() 메소드를 가지고 있고, accept() 메소드는 단지 매개값을 소비하는 역할만 한다. 
 - 소비한다는 말은 사용만 할 뿐 리턴값이 없다는 뜻이다
 	```java
-		//변수타입이 String인 t 매개변수를 소비하는 실행문
-		Consumer<String> consumer = t -> {t를 소비하는 실행문}
-		
-		//변수타입이 각각 String인 t, u 매개변수를 소비하는 실행문 
-		BiConsumer<String, String> consumer = (t, u) -> {t, u 소비 실행문
+	//변수타입이 String인 t 매개변수를 소비하는 실행문
+	Consumer<String> consumer = t -> {t를 소비하는 실행문}
+
+	//변수타입이 각각 String인 t, u 매개변수를 소비하는 실행문 
+	BiConsumer<String, String> consumer = (t, u) -> {t, u 소비 실행문
 
 	```
 -  예제
 	```java
-	 Consumer<String> consumer = t->System.out.println(t+"8");
-	 consumer.accept("java");
+ Consumer<String> consumer = t->System.out.println(t+"8");
+ consumer.accept("java");
 	
 	/*
 		실행결과
