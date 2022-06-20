@@ -348,3 +348,115 @@
 	int num = intSupplier.getAsInt();
 	System.out.println("눈의 수 "  + num);
 	```
+## Function 
+- Function 함수적 인터페이스 특징은 매개값과 리턴값이 있는 applyXXX() 메소드를 가지고 있다. 이 메소드들은 매개값으로 리턴값을 매핑(타입변환) 하는 역할을 한다.
+
+- Function<T, R> 인터페이스를 타겟 타입으로 하는 람다식은 매개값을 T 객체 하나를 가지므로 람다식도 한개의 매개변수를 사용한다. 그리고 apply() 메소드의 리턴 타입이  R  이므로  리턴값은 R 객체가 된다. 
+
+	```java
+	T:Student
+	R:String
+	Return : String
+	
+	Function <Student, String> funtion = t->t.getName();
+
+	```
+-ToIntFuntion<T> 인터페이스를 타겟 타입으로 갖는 람다식은 applyAsInt()  메소드는 매개값으로 T 객체 하나를 가지므로 람다식도 한개의 매개변수를 사용하며, 리턴타입이 int 이므로 람다식 중괄호{} 리턴값은 int가 된다. 
+
+ToIntFuntion<Student> function = t ->t.getScore();
+
+- 예제 
+	```java
+	private static List<Student> list = Arrays.asList{
+		new Student("홍", 90 , 96);
+		new Student("신", 95, 93);
+	}
+	
+	public static void printString(Function<Student,String> function){
+		for(Student student:list){
+			System.out.println(function.apply(student));
+		}
+	}
+	
+	public static void printInt(ToIntFunction<Student> function){
+		for(Student student : list) {
+			System.out.println(function.applyAsInt(student)
+		}
+	}
+	
+	public static void printAvg(ToIntFuntion<Student> function){
+		int sum = 0;
+		for(Student student : list){
+			sum+= function.applyAsInt(student);
+		}
+		double avg = (double) sum / list.size();
+		return avg;
+	}
+	
+	printString(t->t.getName());
+	printInt(t->t.getEnglishScore());
+	printAvg(t->t.getEnglistScore());
+	```
+
+## Operator 
+- Operator 함수적 인터페이스는 Function 과 동일하게 매개변수와 리턴값이 있는 applyXXX() 메소드를 가지고 있다. 이 메소드들은 매개값을 리턴값으로 매핑하는 역할보다는 매개값을 이용해서 연산을 수행한 후 동일한 타입으로 리턴값을 제공하는 역할을 한다.
+
+- IntBinaryOperator  인터페이스를 타겟 타입으로 하는 람다식은 다음과 같이 작성이 가능하다. applyAsInt() 메소드는 매개값으로 두 개의 int를 가지므로 람다식도 두개의 int 매개변수 a와 b 를 사용한다. 그리고 applyAsInt() 메소드의 리턴타입이 int 이므로 람다의 중괄호{} 의 리턴값은 int 가 된다.
+	```java
+	IntBinaryOperaotr operator = (a,b) -> { int 값}
+	```
+- 예제 : int[] 배열에서 최대 최소
+	```java
+	public static int[] scores = {92, 95, 87}
+	
+	public static int maxOrmin(IntBinaryOperator operator){
+		int result = scores[0];
+		for(int score : scores){
+			result = operator.applyAsInt(result,score);
+		}
+		return result;
+	}
+	
+	int max = maxOrmin(
+		(a,b) -> {
+			if(a>=b) return a;
+			else return b;
+		}
+	);
+	
+	int min = maxOrmin(
+		(a,b) -> {
+			if(a<=b) return a;
+			else return b;
+		}
+	);
+	```
+ 
+## Predicate
+- Predicate 는 매개변수와 boolean 리턴값이 있는 testXX() 메소드르 가지고 있다. 
+	```java
+	Predicate<Student> predicate = t -> t.getSex().equals("남자");
+	```
+- 예제 : List 에 저정된 남자 또는 여학생들의 평균점수 출력하기 
+	```java
+	private static List<Student> list = Arrays.asList(
+		new Student("홍", "남자", 90),
+		new Student("김", "여자", 60),
+		new Student("최", "남자", 90),
+		new Student("이", "여자", 90),
+	);
+	
+	public static double avg(Predicate<Student> predicate){
+		int count = 0, sum = 0;
+		for(Student student : list){
+			if(predicate.test(student)){
+				count++;
+				sum+= student.getScore();
+			}
+		}
+		return (double) sum / count;
+	}
+	
+	double maleAvg = avg(t->t.getSex().equals("남자"));
+	double femaleAvg = avg(t->t.getSex().equals("여자"));
+	```
