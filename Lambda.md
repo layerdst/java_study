@@ -312,39 +312,39 @@
 	```
 -  예제
 	```java
- Consumer<String> consumer = t->System.out.println(t+"8");
- consumer.accept("java");
-	
-	/*
-		실행결과
-		java8
-	*/
-	
-	BiConsumer<Sting,Stirng> bigConsumer = (t,u) -> System.out.println(t+u);
-	bigConsumer.accept("java","8");
-	
-	/*
-		실행결과
-		java8
-	*/
+	 Consumer<String> consumer = t->System.out.println(t+"8");
+	 consumer.accept("java");
+
+		/*
+			실행결과
+			java8
+		*/
+
+		BiConsumer<Sting,Stirng> bigConsumer = (t,u) -> System.out.println(t+u);
+		bigConsumer.accept("java","8");
+
+		/*
+			실행결과
+			java8
+		*/
 	``` 
 
 ##  Supplier 
 - supplier 함수적 인터페이스 특징은 매개변수가 없고 리턴값이 있는 getXXX() 메소드를 가지고 있다. 이 메소드들은 실행 후 호출한 곳으로 데이터를 리턴(공급) 하는 역할을 한다
 
 	```java
-		//문자열을 리턴
-		Supplier<String> supplier = () -> {,... ; return "문자열"}	
-		//int를 리턴
-		intSupplier supplier = () - > {return int 값; }
+	//문자열을 리턴
+	Supplier<String> supplier = () -> {,... ; return "문자열"}	
+	//int를 리턴
+	intSupplier supplier = () - > {return int 값; }
 	```
 - 예시
 	```java
-		IntSupplier intSupplier = () -> {
-			int num = (int)(Math.random()*6) + 1;
-			return num;
-		}	
-		
-		int num = intSupplier.getAsInt();
-		System.out.println("눈의 수 "  + num);
+	IntSupplier intSupplier = () -> {
+		int num = (int)(Math.random()*6) + 1;
+		return num;
+	}	
+
+	int num = intSupplier.getAsInt();
+	System.out.println("눈의 수 "  + num);
 	```
