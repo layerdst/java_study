@@ -315,18 +315,18 @@
 	 Consumer<String> consumer = t->System.out.println(t+"8");
 	 consumer.accept("java");
 
-		/*
-			실행결과
-			java8
-		*/
+	/*
+		실행결과
+		java8
+	*/
 
-		BiConsumer<Sting,Stirng> bigConsumer = (t,u) -> System.out.println(t+u);
-		bigConsumer.accept("java","8");
+	BiConsumer<Sting,Stirng> bigConsumer = (t,u) -> System.out.println(t+u);
+	bigConsumer.accept("java","8");
 
-		/*
-			실행결과
-			java8
-		*/
+	/*
+		실행결과
+		java8
+	*/
 	``` 
 
 ##  Supplier 
