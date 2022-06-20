@@ -276,17 +276,17 @@
   ## 표준API 함수적 인터페이스
 - 자바에서 제공되는 표준 API에서 한개의 추상 메소드를 가지는 인터페이스들은 모두 람다식을 이용해서 익명 구현 객체로 표현이 가능하다. 
 - 예를 들어 스레드 작업을 정의하는 Runnable 인터페이스는 매개변수와 리턴값이 없는 run() 메소드만 존재하기 때문에 다음과 같이 람다식을 이용해서 Runnable 인스턴스를 생성할 수 있다.
-```java
+	```java
 	Runnable runnable = () ->{
 		for(int i=0;i<10;i++){
 			System.out.println(i);
 		}
 	}
-	
+
 	Thread thread = new Thread(runnable);
 	thread.start();
 
-```
+	```
 
 
 - 자바 8부터 빈번하게 사용되는 함수적인터페이스는 java.util.function 표준 API 패키지로 제공한다. 이 패키지에서 제공하는 함수적 인터페이스의 목적은 메소드 또는 생성저의 매개 타입으로 사용하여 람다식에 대입할수 있도록 하기 위해서다.
