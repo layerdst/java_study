@@ -460,3 +460,103 @@ ToIntFuntion<Student> function = t ->t.getScore();
 	double maleAvg = avg(t->t.getSex().equals("남자"));
 	double femaleAvg = avg(t->t.getSex().equals("여자"));
 	```
+## andThen() 과 compose() default method
+- 디폴트 및 정적 메소드는 추상메소드가 아니다. 그래서 함수적인터페이스가 선언되어도 여전히 함수적 인터페이스의 성질을 잃지 않는다. 
+- 여기서 함수적 인터페이스 성질이란 하나의 추상메소드를 가진, 람다식으로 익명 구현 객체를 생성할 수 있는 것을 말한다.
+- andThen() 과 compose() 의 차이점은 어떤 함수적 인터페이스부터 먼저 처리하느냐이다. 
+- andThen()  은 인터페이스AB method()를 호출하면 인터페이스A부터 결과를 인터페이스B의 매개값으로 제공한다. (A->B)
+	```java
+	인터페이스AB = 인터페이스A.andThen(인터페이스B);
+	최종결과 = 인터페이스AB.method();
+	```
+- compose() 은 인터페이스AB method()를 호출하면 인터페이스B 부터 처리하고 결과를 인터페이스A의 매개값으로 제공한다. 인터페이스A는 제공받은 매개값을 가지고 처리한 후 최종결과를 리턴한다. 
+	```java
+	인터페이스AB = 인터페이스A.compose(인터페이스B);
+	최종결과 = 인터페이스AB.method();
+	```
+## Consumer 의 순차적연결
+- Consumer 함수적 인터페이스는 처리결과를 리턴하지 않기 때문에 andThen() 디폴트 메소드는 함수적인터페이스의 호출 순서만 정한다.
+	```java
+	Consumer<Member> consumerA = (m) -> {
+		System.out.println(m.getName());
+	}
+	
+	Consumer<Member> consumberB = (m) -> {
+		System.out.println(m.getId());
+	}
+	
+	Consumer<Member> consumerAB = consumerA.andThen(consumerB);
+	Consumber.accept(new Member("홍", "hong", null));
+	
+	/*
+	홍
+	hong
+	*/
+	```
+##Function 의 순차적 연결
+- Function 과 Operator 종류의 함수적 인터페이스는 먼저 실행한 함수적  인터페이스의 결과를 다음 함수적 인터페잇의 매개값으로 넘겨주고, 최종 처리 결과를 리턴한다. 
+	```java
+	Function<Member, Address> functionA;
+	Function<Address, String> functionB;
+	Function<Member, String> functionAB;
+	String city;
+	
+	functionA = (m) -> m.getAddress();
+	functionB = (a) -> a.getCity();
+	
+	functionAB = functionA.andThen(functionB);
+	city = functionAB.apply(
+		new Member("홍", "hong" , new Address("한국", "서울");
+	
+	functionAB = functionB.compose(functionA);
+		new Member("홍길동", new Address("한국", "서울");	
+	```
+
+## and(), or(), negate() / isEqual() 정적메소드
+Prodicate 종류의 함수적 인터페이스는 and(), or(), negate() 디폴트 메소드를 가진다. 이 메소드는 &&, ||, ! 과 대응된다고 볼수 있다. 
+- and() : 두 Predicate가 모두 true 를 리턴하면 최종적으로 true 를 리턴하는 Predicate 를 생성한다. 
+- or() : 둘중하나 true 일때 true
+- negate() : not
+	```java
+	IntPredicate predicateA = a->a%2 == 0;
+	IntPredicate predicateB = a->a%3 == 0;
+	
+	IntPredicate predicateAB;
+	boolean result;
+	
+	predicateAB = predicateA.and(predicateB);
+	result = predicateAB.test(9);
+	//false
+	
+	predicateAB = prediacateA.or(predicateB);
+	result = predicateAB.test(9);
+	//true
+	
+	predicateAB = predicateA.negate();
+	result = predicateAB.test(9);
+	//true
+	
+	```
+- isEqual() 정적  메소드는 java.util.Objects 클래스의 equals() 매개값으로 제공하고, Objects.equals(sourceObject, targetObject) 의 리턴값을 얻어 새로운 Predicate<T> 를 생성한다
+	```java
+	Predicate<Object> predicate = Predicate.isEqual(targetObject);
+	boolean result = predicate.test(sourceObject)
+	
+	predicate = Predicate.isEqual(null);
+	System.out.println(predicate.test(null));
+	//true
+	
+	predicate = Predicate.isEqual("j");
+	System.out.println(predicate.test(null));
+	//false
+
+	predicate = Predicate.isEqual(null);
+	System.out.println(predicate.test("java8");
+	//false
+	
+	predicate = Predicate.isEqual("j");
+	System.out.println(predicate.test("java8");
+	//false
+	
+	```
+
