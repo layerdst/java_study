@@ -493,7 +493,7 @@ ToIntFuntion<Student> function = t ->t.getScore();
 	hong
 	*/
 	```
-##Function 의 순차적 연결
+## Function 의 순차적 연결
 - Function 과 Operator 종류의 함수적 인터페이스는 먼저 실행한 함수적  인터페이스의 결과를 다음 함수적 인터페잇의 매개값으로 넘겨주고, 최종 처리 결과를 리턴한다. 
 	```java
 	Function<Member, Address> functionA;
