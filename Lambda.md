@@ -560,3 +560,79 @@ Prodicate 종류의 함수적 인터페이스는 and(), or(), negate() 디폴트
 	
 	```
 
+## minBy(), maxBy() 
+- BinaryOperator<T> 함수적 인터페이스는 minBy(), maxBy() 정적 메소드를 제공한다. 두 메소드는 매개값으로 Comparator를 이용해 최대 T와 최소 T얻는 BinaryOperator<T> 를 리턴한다.
+ 
+- Comparator<T> 는 다음과 같이 선언된 함수적 인터페이스이다. o1, o2 를 비교해서 o1 이 작으면 음수, 동일하면 0, 크면 양수를 리턴하는 compare() 메소드가 선언되어 있다.
+	```java
+	@FuntionalInterface
+	public interface Comparator<T>{
+		public int compare(T o1, T o2);
+	}
+
+- Comparator<T> 를 타겟타입으로 하는 람다식은 다음과 같이 작성한다. 
+	```java
+	(o1, i2) - > return int;
+	
+	o1, o2가 int 타입이면 
+	(o1,o2) -> Integer.compare(o1,o2);
+	```
+ - 예제 
+	 ```java
+	BinaryOperator<Fruit> binaryOperator;
+	Fruit fruit;
+	
+	binaryOperator = BinaryOperator.minBy((f1,f2)->Integer.compare(f1.price, f2.price));
+	fruit = binaryOperator.apply(new Fruit("딸기", 6000), new Fruit("수박", 10000);	 
+	```
+
+## 메소드 참조 
+- 메소드를 참조해서 매개변수의 정보 및 리턴타입을 알아내어, 람다식에서 불필요한 매개변수를 제거하는 것이 목적이다. 
+
+- 람다식은 종종 기존 메소드를 다순히 호출만 하는 경우가 많다. 예를 들어 두 개의 값을 받아 큰수를 리턴하는 Math 클래서의 max() 정적 메소드를 호출하는 람다식은 다음과 같다.
+
+	```java
+	(l, r) -> Math.max(l, r);
+	```
+- 람다식은 단순히 두개의 값을 Math.max() 메소드의 매개값으로 전달하는 역할만 하기 때문에 다소 불편해 보인다. 이 경우에는 다음과 같이 메소드 참조를 이용하면 깔끔하게 처리할 수 있다.
+	```java
+	Math :: max;
+	```
+- 메소드 참조도 람다식과 마찬가지로 인터페이스의 익명 구현 객체로 생성되므로 타겟타입인 인터페아스의 추상메소드가 어떤 매개변수를 가지고, 리턴타입이 무엇인가에 따라 달라진다.
+	```java
+	IntBinartOperator op = Math::max;
+	```
+
+## 정적메소드와 인스턴스 메소드 참조
+정적메소드를 참조할 경우 클래스 이름뒤 ::  을 붙이고 정적메소드 이름을 기술하면 된다. 
+```java
+클래스 :: 메소드	
+```
+인스턴스 메소드일 경우에는 먼저 객체를 생성한 다음 참조 변수 뒤에 :: 를 붙이고 인스턴스 메소드 이름을 기술 하면 된다. 
+```java
+참조변수 :: 메소드
+```
+- Calculator 예제
+	```java
+	//정적메소드 
+	public static int staticMethod(int x, int y){
+		return x+y;
+	}
+	
+	인스턴스메소드
+	public int instanceMethod(int x, int y){
+		return x+y;
+	}
+	
+	op = (x,y) -> Calculator.staticMethod(x,y);
+	System.out.println(op.applyAsInt(1,2));
+	
+	op = Calculator :: staticMethod;
+	System.out.println(op.applyAsInt(3,4));
+	
+	Calculator c = new Calculator();
+	op = (x,y) -> c.instanceMethod(x, y);
+	System.out.println(op.applyAsInt(5,6));
+	
+	op = c::instanceMethod;
+	```
