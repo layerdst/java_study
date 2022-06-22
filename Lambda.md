@@ -636,3 +636,62 @@ Prodicate 종류의 함수적 인터페이스는 and(), or(), negate() 디폴트
 	
 	op = c::instanceMethod;
 	```
+## 매개변수의 메소드 참조
+- 다음과 같이 람다식에서 제공되는  a 매개변수의 메소드를 호출해서 b 매개변수를 매개값으로 사용하는 경우도 있다. 
+	```java
+	(a,b)->{a.instanceMethod(b);}
+	
+	메소드 참조로 변형
+	클래스 :: instanceMethod
+	``` 
+- 예제 : 두 문자열이 대소문자와 상관없이 동일한 알파벳으로 구성되어 있는지 비교한다. 비교를 위해 사용된 메소드는 String 의 인스턴스 메소드인 compareToIgnoreCase()  이다 
+- a.compareToIgnoreCase(b) 로 호출될때 사전 순으로 a가 b보다 먼저오면 음수를 동일하면 0, 나중에 오면 양수를 리턴한다. 사용된 함수적 이터페이스는 두 String 매개값으로 int를 리턴하는 ToIntBiFuntion<String, String> 이다. 
+	```java
+	ToIntBiFuntion<String, String> function;
+	function = (a,b)-> a.compareToIgnoreCase(b);
+	
+	//메소드 참조 축약
+	function = String::compareToIgnoreCase; 
+	```
+
+## 생성자 참조 
+- 메소드 참조는 생성자 참조도 포함한다. 생성자를 참조한다는 것은 객체 생성을 의미한다. 단순히 메소드 호출로 구성된 람다식을 메소드 참조로 대치할수 있듯, 객체를 생성하고 리턴하도록 구성된 람다식은 생성자 참조로 대치가 가능하다. 
+	```java
+	(a,b)-> new 클래스(a,b);
+	
+	//생성자 참조 
+	클래스 :: new
+	```
+- 생성자 오버로딩되어 여러개가 있을 경우, 컴파일러는 함수적 인터페이스의 추상메소드와 동일한 매개변수 타입과 개수를 가지고있는 생성자를 차자 실행한다. 만약 해당 생성자가 존재하지 않으면 컴파일 오류가 발생한다. 
+
+- 예제 : 생성자 오버로딩
+	```java
+	public class Member{
+		private String name;
+		private String id;
+		
+		public Member(){
+			System.out.println("t");
+		}
+		
+		public Member(String id){
+			this.id = id 
+			System.out.println("Member id");
+		}
+		
+		public Member(String name, String id){
+			this.name = name;
+			this.id = id 
+			System.out.println("Member name id");
+		}
+	}
+	
+	public static void main(String[] args){
+		Function<String, Member> function1=Member::new;
+		Member member1 = function1.apply("ange");
+		
+		BiFunction<String, String, Member> function2 = Member :: new;
+		Member member2 = function2.apply("신천사", "angel");
+	
+	}
+	```
