@@ -361,9 +361,10 @@
 	Function <Student, String> funtion = t->t.getName();
 
 	```
--ToIntFuntion<T> 인터페이스를 타겟 타입으로 갖는 람다식은 applyAsInt()  메소드는 매개값으로 T 객체 하나를 가지므로 람다식도 한개의 매개변수를 사용하며, 리턴타입이 int 이므로 람다식 중괄호{} 리턴값은 int가 된다. 
-
-ToIntFuntion<Student> function = t ->t.getScore();
+- ToIntFuntion<T> 인터페이스를 타겟 타입으로 갖는 람다식은 applyAsInt()  메소드는 매개값으로 T 객체 하나를 가지므로 람다식도 한개의 매개변수를 사용하며, 리턴타입이 int 이므로 람다식 중괄호{} 리턴값은 int가 된다. 
+	```java
+	ToIntFuntion<Student> function = t ->t.getScore();
+	```
 
 - 예제 
 	```java
@@ -387,7 +388,7 @@ ToIntFuntion<Student> function = t ->t.getScore();
 	public static void printAvg(ToIntFuntion<Student> function){
 		int sum = 0;
 		for(Student student : list){
-			sum+= function.applyAsInt(student);
+			sum+= function.applyAsInt(student));
 		}
 		double avg = (double) sum / list.size();
 		return avg;
