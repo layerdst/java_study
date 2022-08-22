@@ -139,4 +139,74 @@
 ### BufferedInputStream 과 BufferedReader
 - BufferedInputStream 은 바이트 입력 스트림에 연결되어 버퍼를 제공해주는 보조스트림이고 BufferedReader 는 문자 입력  스트림에 연결되어 버퍼를 제공해주는 보조스트림이다.
 - 둘다 입력 소스로부터 자신의 내부 버퍼크기만큼 데이터를 미리 읽고 버퍼에 저장해둔다. 프로그램은 외부의 입력 소스로부터 직접 읽는 대신 버퍼로 부터 읽음으로써 읽기 성능이 향상된다.
-- 
+- 두 보조 스트림은 준 입력스트림과 연결되어 8192 내부 버퍼 사이즈를 가지게된다.
+- BufferedInputStream 은 8192 바이트가 BufferedReader 는 최대 8192 문자가 저장된다.
+	```java
+	BufferedInputStream bis = new BufferedInputStream(바이트입력스트림);
+	BufferedReader br = new BufferedReader(문자입력스트림);
+	```
+
+## Channel 
+- 데이터의 양방향 통신으로 Stream과 유사하지만 동작 방식이 다르다.
+- input, output을 구분하지 않으며, 기본적으로 buffer를 통해서 입출력을 수행한다. 
+- 자바 기본 입출력방식인 stream 은 동기적 특성에 의해 block이 되고, Non-buffer 특징으로 입출력 속도가 느릴수 밖에 없다.
+- 자바 4부터는 이 문제를 해결하고자 NIO(New Input Output) 가 java.io 패키지에 포함되어 등장하였다.
+
+## 표준스트림
+- 자바는 콘솔로부터 데이터를 입력받을때 System.in 을 사용하고, 콘솔에 데이터를 출력할때 System.out을 사용한다. 에러는 출력할때에 System.err 를 사용한다.
+
+### System.in 필드
+- 데이터를 입력받는 System 클래스의 in 정적 필드.
+- InputStream 타입의 필드이므로 InputStream 변수로 참조가 가능.
+```java
+InputStream is = System.in;
+```
+- 키보드로 어떤 키가 입력되었는지 확인하려면 InputStream 의 read() 메소드로 한 바이트를 읽으면 된다. 리턴된 int 값에는 십진수 아스키 코드가 들어있다.
+```java
+int asciicode = is.read();
+```
+
+- InputStream 의 read() 메소드는 1바이트만 읽기 때문에 1바이트의 아스키 코드로 표현되는 숫자, 영어, 특수문자는 잘 읽을 수 있다.
+- 하지만 한글과 같이 2바이트를 필요로 하는 유니코드 read() 메소드로 읽을 수 없다. 
+- 키보드로 입력된 한글을 얻기 위해서는 우선 read(byte[] b) 나 read(byte[] b, int off, int len) 메소드로 전체 입력된 내용을 바이트 배열로 받고, 이 배열을 이용해서 String 객체를 생성하면 된다.
+```java
+byte[] byteData = new byte[15];
+int readByteNo = System.in.read(byteData);
+
+String str = new String(byteData, 0, readByteNo-2)
+
+// -2 는 Enter 키에 해당하는 마지막 두 바이트를 제외하기 위해서다.
+
+```
+
+
+### System.out 필드
+- PrintStream 이 OutputStream의 하위 클래스이므로 out 필드를 OutputStream 으로 변환해서 사용할 수 있다.
+```java
+OutputStream os = System.out;
+```
+- 콘솔로 1개의 바이트를 출력하려면 OutputStream 의 write(int b) 메소드를 이용하면 된다. 이때 바이트값은 아스키 코드인데, write() 메소드는 아스키 코드를 문자로 콘솔에 출력한다.
+```java
+byte b = 97;
+os.write(b); // a 출력
+os.flush();
+```
+- write(int b) 메소드는 1바이트만 보낼 수 있기 때문에 1바이트로 표현가능한 숫자, 영어, 특수 문자는 출력이 가능하지만, 2바이트로 표현되는 한글은 출력할 수 없다.
+- write(byte[] b), write(byte[] b, int off, int len) 메소드로 한글을 출력할 수 있다. 
+```java
+String name = "홍길동";
+byte[] nameBytes = name.getBytes();
+os.write(nameBytes);
+os.flush();
+```
+
+### System.err 필드
+- PrintStream 이 OutputStream의 하위 클래스이므로 err 필드를 OutputStream 으로 변환해서 사용할 수 있다.
+- 에러 출력을 하는 스트림으로서, 출력 데이터가 만들어지기 전에 생성된다.
+```java
+System.out.println("out")
+System.err.println("err");
+
+//err
+//out 출력
+```
