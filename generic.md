@@ -264,3 +264,155 @@ public class BoundedMain{
 }
 ```
 
+### 와일드 카드
+- 코드에서 ? 를 일반적으로 와일드카드라 부른다. 제네릭 타입을 매개값이나 리턴타입으로 사용할때 구체적인 타입대신에 와일드 카드를 다음과 같이 세가지 형태로 사용할 수 있다.
+
+	- 제네릭 타입 \<?\> : Unbounded Wildcards(제한없음)
+		- 타입 파라미터를 대치하는 구체적인 타입으로 모든 클래스나 인터페이스에 타입이 올 수 있다.
+	- 제네릭 타입\< ? extends 상위 타입\> : Upper Bounded Wildcards(상위 클래스 제한)
+		- 타입 파라미터를 대치하는 구체적인 타입으로 상위타입이나 하위타입만 올수 있다.
+	- 제네릭 타입\< ? super 하위타입 \> : Lower Bounded Wildcards(하위 클래스 제한)
+		- 타입 파라미터를 대치하는 구체적인 타입으로 하위 타입이나 상위타입이 올수있다.
+	- 예제 : 수강생이 될 수 있는 타입은 아래의 4가지 클래스로 각 직장인, 학생, 모든 수강생이 들을 수 있는 수업과정을 등록하는 제네릭 타입과 메소드를 생성한다. 
+		```mermaid
+		graph TD;
+		Person-->Worker;
+		Person-->Student;
+		Student-->HighStudent;
+		```
+	
+- Course Class
+```java
+public class Course <T>{  
+    private String name;  
+    private T[] students;  
+  
+    public Course(String name, int capacity) {  
+        this.name = name;  
+        students = (T[]) (new Object[capacity]);  
+    }  
+  
+    public String getName(){return name;}  
+  
+    public T[] getStudents(){  
+        return students;  
+    }  
+  
+    public void add(T t){  
+        for (T student : students) {  
+            if(student==null){  
+                student=t;  
+                break;            }  
+        }  
+    }  
+}
+```
+
+- WildCardExample
+```java
+public class WildCardExample {  
+  
+    public static void registerCourse(Course<?> course){  
+        System.out.println(course.getName() + "수강생");  
+        Arrays.toString(course.getStudents());  
+    }  
+  
+    public static void registerCourseStudent(Course<? extends Student> course){  
+        System.out.println(course.getName() + "수강생");  
+        Arrays.toString(course.getStudents());  
+    }  
+  
+    public static void registerCourseWorker(Course<? extends Worker> course){  
+        System.out.println(course.getName() + "수강생");  
+        Arrays.toString(course.getStudents());  
+    }  
+}
+```
+
+### 제네릭 타입의 상속과 구현
+- 제네릭 타입도 다른 타입과 마찬가지로 부모클래스가 될 수 있다. 다음은 Product\<T, M\> 제네릭 타입을 상속해서 ChildProduct\<T, M\> 타입을 정의한다.
+```java
+public class ChildProduct<T, M> extends Product<T, M>
+```
+- 제네릭 타입은 추가적으로 타입 파라미터를 가질 수 있다. 다음은 세가지 타입 파라미터를 가진 자식 제네릭 타입을 선언한 것이다.
+```java
+public class ChildProduct<T, M, C> extends Product<T, M>
+```
+
+-  예시
+	- Product는 최상위 클래스로 모든 제품의 종류와 모델을 가질 수 있는 설계를 가진다.
+	- ChildProduct 는 Product를 상속받아 제조사를 특정짓는다. 
+	- Storage 지점들의 재고수량 입출력을 수행할 수 있는 메소드를 간략히 정리하는 인터페이스다.
+	- StorageImpl 은 Storage 인터페이스의 구현체이며, 입출력의 수량을 배열로 저장하는 클래스이다. 
+	
+> Product
+```java
+public class Product<T, M> {  
+  
+    private T kind;  
+    private M model;  
+  
+    public T getKind() {  
+        return kind;  
+    }  
+  
+    public void setKind(T kind) {  
+        this.kind = kind;  
+    }  
+  
+    public M getModel() {  
+        return model;  
+    }  
+  
+    public void setModel(M model) {  
+        this.model = model;  
+    }  
+}
+```
+
+> ChildProduct
+```java
+public class ChildProduct<T, M, C> extends Product<T,M>{  
+    private C company;  
+  
+    public C getCompany() {  
+        return company;  
+    }  
+  
+    public void setCompany(C company) {  
+        this.company = company;  
+    }  
+}
+```
+
+>Storage
+```java
+public interface Storage <T>{  
+    public void add(T item, int index);  
+    public T get(int index);  
+}
+```
+
+>StorageImpl
+```java
+public class StorageImpl<T> implements Storage<T>{  
+  
+  
+    private T[] arr;  
+  
+    public StorageImpl(int capacity) {  
+        arr = (T[]) (new Object[capacity]);  
+    }  
+  
+    @Override  
+    public void add(T item, int index) {  
+  
+    }  
+  
+    @Override  
+    public T get(int index) {  
+        return null;  
+    }  
+}
+```
+
